@@ -1,3 +1,18 @@
+# data files
+*.fastq
+*.fasta
+*.bam
+*.bai
+*.txt
+*.csv
+*.fna 
+*.fai
+reference/*
+reads/*
+
+# snakemake files
+.snakemake/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
