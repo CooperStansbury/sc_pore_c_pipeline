@@ -1,0 +1,8 @@
+# paths to config files
+# note that these are relative paths to the snakemake directory
+reads: "inputs/reads"
+reference: "inputs/reference/GCF_000001635.27_GRCm39_genomic.fna"
+assembly: "inputs/assembly/GRCm39_Assembly.csv"
+scripts: "scripts"
+output_dir: "outputs"
+

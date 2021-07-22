@@ -14,14 +14,25 @@ SAMPLES = snakemake_utils.get_sample_list(input_path)
 
 rule all:
     input:
+        "outputs/config.yaml",
         "outputs/tables/raw_alignment_table.csv",
         "outputs/tables/digested_fragments_table.csv",
         "outputs/tables/alignment_table.csv",
-         "outputs/tables/alignment_table_chrom.csv",
+        "outputs/tables/alignment_table_chrom.csv",
         "outputs/tables/filtered_alignment_table.csv",
-        "outputs/tables/paohviz_output.csv"
+        "outputs/tables/paohviz_output.csv",
+        "outputs/stats/merged_sorted_stats.txt"
         
         
+rule copy_config:
+    input:
+        "config/config.yaml"
+    output:
+        "outputs/config.yaml"
+    shell:
+        "cp {input} {output}"
+
+
 rule bwa_map:
     input:
         refgenome=f"{config['reference']}",
@@ -75,6 +86,26 @@ rule samtools_index:
     shell:
         "samtools index {input}"
         
+
+rule get_stats:
+    input:
+        "outputs/merged_sorted.bam"
+    output:
+        "outputs/stats/merged_sorted_stats.txt"
+    shell:
+        "samtools stats {input} > {output}"
+     
+
+# rule get_depth:
+#     input:
+#         "outputs/merged_sorted.bam"
+#     output:
+#         "outputs/stats/depth_estimates.txt"
+#     shell:
+#         "samtools depth {input} "
+#         " | awk '{sum+=$3; sumsq+=$3*$3} END { print "mean depth: ",sum/NR; print "std: ",sqrt(sumsq/NR - (sum/NR)**2)}' " 
+#         " | > {output} "
+#         
         
 rule create_table:
     input:
