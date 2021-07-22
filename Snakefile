@@ -16,7 +16,10 @@ rule all:
     input:
         "outputs/tables/raw_alignment_table.csv",
         "outputs/tables/digested_fragments_table.csv",
-        "outputs/tables/alignment_table.csv"
+        "outputs/tables/alignment_table.csv",
+         "outputs/tables/alignment_table_chrom.csv",
+        "outputs/tables/filtered_alignment_table.csv",
+        "outputs/tables/paohviz_output.csv"
         
         
 rule bwa_map:
@@ -99,4 +102,31 @@ rule assign_fragments:
         "outputs/tables/alignment_table.csv"
     shell:
         "python3 scripts/assign_fragments.py {input.alignment_table} {input.fragments_table} > {output}"
+        
 
+rule map_assembly:
+    input:
+        align="outputs/tables/alignment_table.csv",
+        assembly=config['assembly']
+    output:
+        "outputs/tables/alignment_table_chrom.csv"
+    shell:
+        "python3 scripts/map_assembly.py {input.align} {input.assembly} > {output}"
+        
+        
+rule filter_bookends:
+    input:
+        "outputs/tables/alignment_table_chrom.csv"
+    output:
+        "outputs/tables/filtered_alignment_table.csv"
+    shell:
+        "python3 scripts/filter_bookends.py {input} > {output}"
+    
+        
+rule build_paohviz_table:
+    input:
+        "outputs/tables/filtered_alignment_table.csv"
+    output:
+        "outputs/tables/paohviz_output.csv"
+    shell:
+        "python3 scripts/build_paohviz.py {input} > {output}"
