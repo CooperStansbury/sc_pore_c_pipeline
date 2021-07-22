@@ -9,6 +9,7 @@
 *.fai
 reference/*
 reads/*
+inputs/*
 
 # snakemake files
 .snakemake/*

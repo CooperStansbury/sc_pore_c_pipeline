@@ -1,63 +1,102 @@
 import pandas as pd
 import yaml
 from pathlib import Path
-from utils import file_ops
-from utils import GL_module_def
+from utils import snakemake_utils
 
 # Define config
 BASE_DIR = Path(workflow.basedir)
 configfile: BASE_DIR/"config/config.yaml"
 
-# define modules for GL
-GL_module_def.load_modules()
-
-# build the output directory 
-output_path = f"{BASE_DIR}/{config['output_dir']}"
-file_ops.build_output_dir(output_path)
-
-# get the list of samples
-input_path = f"{BASE_DIR}/{config['reads_dir']}"
-SAMPLES = file_ops.get_samples(input_path)
+# get the list of basenames from the input directory
+input_path = f"{BASE_DIR}/{config['reads']}"
+SAMPLES = snakemake_utils.get_sample_list(input_path)
 
 
-# rule all:
-#     input:
-#         bam="outputs/alignments/test.bam"
-# 
-
-rule index_bwa:
+rule all:
     input:
-        refgenome=f"{config['refgenome']}"
+        "outputs/tables/raw_alignment_table.csv",
+        "outputs/tables/digested_fragments_table.csv",
+        "outputs/tables/alignment_table.csv"
+        
+        
+rule bwa_map:
+    input:
+        refgenome=f"{config['reference']}",
+        reads=config['reads'] + "/{sample}.fastq"
     output:
-        indexed_ref=f"{config['refgenome']}"
+        bam="outputs/mapped/{sample}.bam"
+    log:
+        "outputs/logs/{sample}.log"
+    threads:
+        8
     shell:
-        "bwa index {input.refgenome}"
+        "bwa mem -t {threads} {input.refgenome} {input.reads} "
+        " | samtools view -Sb -> {output.bam} 2>{log}"
+        
 
-# rule bwa_map:
-#     input:
-#         refgenome=f"{config['refgenome']}",
-#         reads=expand("{input_dir}/{sample}.fastq", input_dir=config['reads_dir'], sample=SAMPLES)
-#     output:
-#         bam="outputs/alignments/{sample}.bam",
-#     log:
-#         f"{output_path}/logs/run.log"
-#     shell:
-#         "bwa mem {input.refgenome} {input.reads} | samtools view -Sb - > {output.bam}"        
-# 
-
-
+rule samtools_merge:
+    input:
+        expand("outputs/mapped/{sample}.bam", sample=SAMPLES)
+    output:
+        "outputs/merged.bam"
+    threads:  
+        8     
+    wrapper:
+        "0.77.0/bio/samtools/merge"
 
 
-# rule bwa_map:
-#     input:
-#         refgenome=f"{config['refgenome']}",
-#         reads=expand("{input_dir}/{sample}.fastq", input_dir=config['reads_dir'], sample=SAMPLES)
-#     output:
-#         bam={BASE_DIR} / {config['output_dir']},
-#     log:
-#         f"{output_path}/logs/run.log"
-#     shell:
-#         "bwa mem {input.refgenome} {input.reads} "
-#         " | python3 {BASE_DIR}/scripts/reformat_bam.py "
-#         " | samtools sort -O bam -o {output.bam} -);"
-#         " samtools index {output.bam} "
+rule reformat_bam:
+    input:
+        "outputs/merged.bam"
+    output:
+        "outputs/merged_reformatted.bam"
+    shell:
+        "cat {input} | python3 scripts/reformat_bam.py > {output} "
+
+
+rule samtools_sort:
+    input:
+        "outputs/merged_reformatted.bam"
+    output:
+        "outputs/merged_sorted.bam"
+    shell:
+        "samtools sort -T {input} "
+        "-O bam {input} > {output}"
+
+
+rule samtools_index:
+    input:
+        "outputs/merged_sorted.bam"
+    output:
+        "outputs/merged_sorted.bam.bai"
+    shell:
+        "samtools index {input}"
+        
+        
+rule create_table:
+    input:
+        "outputs/merged_sorted.bam"
+    output:
+        "outputs/tables/raw_alignment_table.csv"
+    shell:
+        "cat {input} | python3 scripts/create_table.py > {output}"
+        
+        
+rule virtual_digest:
+    input:
+        f"{config['reference']}"
+    output:
+        "outputs/tables/digested_fragments_table.csv"
+    shell:
+        "python3 scripts/virtual_digest.py {input} > {output}"
+
+        
+rule assign_fragments:
+    input:
+        alignment_table="outputs/tables/raw_alignment_table.csv",
+        fragments_table="outputs/tables/digested_fragments_table.csv"
+    output:
+        "outputs/tables/alignment_table.csv"
+    shell:
+        "python3 scripts/assign_fragments.py {input.alignment_table} {input.fragments_table} > {output}"
+
