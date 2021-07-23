@@ -23,8 +23,8 @@ rule all:
         f"{OUTPUTS}config.yaml",
         f"{OUTPUTS}tables/raw_alignment_table.csv",
         f"{OUTPUTS}tables/digested_fragments_table.csv",
+        f"{OUTPUTS}tables/alignment_table_mapped.csv",
         f"{OUTPUTS}tables/alignment_table.csv",
-        f"{OUTPUTS}tables/alignment_table_chrom.csv",
         f"{OUTPUTS}tables/filtered_alignment_table.csv",
         f"{OUTPUTS}tables/paohviz_output.csv",
         f"{OUTPUTS}stats/merged_sorted_stats.txt",
@@ -153,24 +153,24 @@ rule assign_fragments:
         alignment_table=f"{OUTPUTS}tables/raw_alignment_table.csv",
         fragments_table=f"{OUTPUTS}tables/digested_fragments_table.csv"
     output:
-        f"{OUTPUTS}tables/alignment_table.csv"
+        f"{OUTPUTS}tables/alignment_table_mapped.csv"
     shell:
         "python3 scripts/assign_fragments.py {input.alignment_table} {input.fragments_table} > {output}"
         
 
 rule map_assembly:
     input:
-        align=f"{OUTPUTS}tables/alignment_table.csv",
+        align=f"{OUTPUTS}tables/alignment_table_mapped.csv",
         assembly=ASSEMBLY
     output:
-        f"{OUTPUTS}tables/alignment_table_chrom.csv"
+        f"{OUTPUTS}tables/alignment_table.csv"
     shell:
         "python3 scripts/map_assembly.py {input.align} {input.assembly} > {output}"
         
         
 rule filter_bookends:
     input:
-        f"{OUTPUTS}tables/alignment_table_chrom.csv"
+        f"{OUTPUTS}tables/alignment_table.csv"
     output:
         f"{OUTPUTS}tables/filtered_alignment_table.csv"
     shell:

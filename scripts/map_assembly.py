@@ -26,6 +26,8 @@ def map_chromosome_names(align, assembly, output_csv):
                   right_on='RefSeq accession', 
                   how='left')
     
+    df['fragment_midpoint'] = (df['fragment_end'] - df['fragment_start']) // 2
+    
     df.to_csv(output_csv, index=False)
 
 if __name__ == "__main__":

@@ -41,7 +41,7 @@ def subset_chromosome(df, chrom, verbose=True):
     """    
     if verbose:
         print(f"\nnumber of total mapped fragments {chrom}: {len(df)}")
-    df = df[df['Chromosome'] == str(chrom)]
+    df = df[df['Chromosome'].astype(str) == str(chrom)]
     if verbose:
         print(f"number of mapped fragments in chromosome {chrom}: {len(df)}")
     return df

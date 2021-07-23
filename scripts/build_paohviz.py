@@ -15,10 +15,15 @@ def build_paohvis_output(df):
     -----------------------------
         : pao_df (pd.DataFrame): paohvis structured CSV
     """
-    pao_df = df[['read_idx', 'fragment_id', 'chrom', 'read_name']].reset_index(drop=True)
+    columns = ['read_idx', 
+               'fragment_id', 
+               'fragment_midpoint', 
+               'chrom', 'read_name']
+    pao_df = df[columns].reset_index(drop=True)
+    
     pao_df['slot_1'] = ""
     pao_df['slot_2'] = ""
-    pao_df = pao_df[['read_idx', 'fragment_id', 'slot_1', 'slot_2', 'chrom', 'read_name']]
+    pao_df = pao_df[['read_idx', 'fragment_midpoint', 'slot_1', 'slot_2', 'chrom', 'read_name', 'fragment_id']]
     return pao_df 
 
 
