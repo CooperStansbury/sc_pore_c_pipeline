@@ -1,8 +1,7 @@
 # paths to config files
-# note that these are relative paths to the snakemake directory
-reads: "inputs/reads"
-reference: "inputs/reference/GCF_000001635.27_GRCm39_genomic.fna"
-assembly: "inputs/assembly/GRCm39_Assembly.csv"
-scripts: "scripts"
-output_dir: "outputs"
+reads: "/nfs/turbo/umms-indikar/shared/projects/poreC/pipeline_test/inputs/reads/"
+reference: "/nfs/turbo/umms-indikar/shared/projects/poreC/pipeline_test/inputs/reference/GCF_000001635.27_GRCm39_genomic.fna"
+assembly: "/nfs/turbo/umms-indikar/shared/projects/poreC/pipeline_test/inputs/assembly/GRCm39_Assembly.csv"
+output: "/nfs/turbo/umms-indikar/shared/projects/poreC/pipeline_test/outputs/"
+threads: 36
 

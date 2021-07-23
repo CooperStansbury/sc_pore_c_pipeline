@@ -3,76 +3,83 @@ import yaml
 from pathlib import Path
 from utils import snakemake_utils
 
-# Define config
+# Define config and input and output directories
 BASE_DIR = Path(workflow.basedir)
 configfile: BASE_DIR/"config/config.yaml"
 
+OUTPUTS = f"{config['output']}"
+READS = f"{config['reads']}"
+REFERENCE = f"{config['reference']}"
+ASSEMBLY = f"{config['assembly']}"
+
+
 # get the list of basenames from the input directory
-input_path = f"{BASE_DIR}/{config['reads']}"
-SAMPLES = snakemake_utils.get_sample_list(input_path)
+SAMPLES = snakemake_utils.get_sample_list(READS)
 
 
 rule all:
     input:
-        "outputs/config.yaml",
-        "outputs/tables/raw_alignment_table.csv",
-        "outputs/tables/digested_fragments_table.csv",
-        "outputs/tables/alignment_table.csv",
-        "outputs/tables/alignment_table_chrom.csv",
-        "outputs/tables/filtered_alignment_table.csv",
-        "outputs/tables/paohviz_output.csv",
-        "outputs/stats/merged_sorted_stats.txt"
+        f"{OUTPUTS}merged_sorted.bam",
+        f"{OUTPUTS}config.yaml",
+        f"{OUTPUTS}tables/raw_alignment_table.csv",
+        f"{OUTPUTS}tables/digested_fragments_table.csv",
+        f"{OUTPUTS}tables/alignment_table.csv",
+        f"{OUTPUTS}tables/alignment_table_chrom.csv",
+        f"{OUTPUTS}tables/filtered_alignment_table.csv",
+        f"{OUTPUTS}tables/paohviz_output.csv",
+        f"{OUTPUTS}stats/merged_sorted_stats.txt",
+        f"{OUTPUTS}stats/coverage_table.txt",
+        f"{OUTPUTS}stats/samtools_coverage.txt",
+        f"{OUTPUTS}stats/custom_coverage_table.csv"
         
         
 rule copy_config:
     input:
         "config/config.yaml"
     output:
-        "outputs/config.yaml"
+        f"{OUTPUTS}config.yaml"
     shell:
         "cp {input} {output}"
 
 
 rule bwa_map:
     input:
-        refgenome=f"{config['reference']}",
-        reads=config['reads'] + "/{sample}.fastq"
+        refgenome=REFERENCE,
+        reads=f"{READS}{{sample}}.fastq"
     output:
-        bam="outputs/mapped/{sample}.bam"
-    log:
-        "outputs/logs/{sample}.log"
+        bam=f"{OUTPUTS}mapped/{{sample}}.bam"
     threads:
-        8
+        config['threads']
     shell:
         "bwa mem -t {threads} {input.refgenome} {input.reads} "
-        " | samtools view -Sb -> {output.bam} 2>{log}"
+        " | samtools view -Sb -> {output.bam}"
         
 
 rule samtools_merge:
     input:
-        expand("outputs/mapped/{sample}.bam", sample=SAMPLES)
+        expand(f"{OUTPUTS}mapped/{{sample}}.bam", sample=SAMPLES)
     output:
-        "outputs/merged.bam"
+        f"{OUTPUTS}merged.bam"
     threads:  
-        8     
+        config['threads']     
     wrapper:
         "0.77.0/bio/samtools/merge"
 
 
 rule reformat_bam:
     input:
-        "outputs/merged.bam"
+        f"{OUTPUTS}merged.bam"
     output:
-        "outputs/merged_reformatted.bam"
+        f"{OUTPUTS}merged_reformatted.bam"
     shell:
         "cat {input} | python3 scripts/reformat_bam.py > {output} "
 
 
 rule samtools_sort:
     input:
-        "outputs/merged_reformatted.bam"
+        f"{OUTPUTS}merged_reformatted.bam"
     output:
-        "outputs/merged_sorted.bam"
+        f"{OUTPUTS}merged_sorted.bam"
     shell:
         "samtools sort -T {input} "
         "-O bam {input} > {output}"
@@ -80,84 +87,100 @@ rule samtools_sort:
 
 rule samtools_index:
     input:
-        "outputs/merged_sorted.bam"
+        f"{OUTPUTS}merged_sorted.bam"
     output:
-        "outputs/merged_sorted.bam.bai"
+        f"{OUTPUTS}merged_sorted.bam.bai"
     shell:
         "samtools index {input}"
         
 
 rule get_stats:
     input:
-        "outputs/merged_sorted.bam"
+        f"{OUTPUTS}merged_sorted.bam"
     output:
-        "outputs/stats/merged_sorted_stats.txt"
+        f"{OUTPUTS}stats/merged_sorted_stats.txt"
     shell:
         "samtools stats {input} > {output}"
      
 
-# rule get_depth:
-#     input:
-#         "outputs/merged_sorted.bam"
-#     output:
-#         "outputs/stats/depth_estimates.txt"
-#     shell:
-#         "samtools depth {input} "
-#         " | awk '{sum+=$3; sumsq+=$3*$3} END { print "mean depth: ",sum/NR; print "std: ",sqrt(sumsq/NR - (sum/NR)**2)}' " 
-#         " | > {output} "
-#         
-        
+rule get_coverage_table:
+    input:
+        f"{OUTPUTS}merged_sorted.bam"
+    output:
+        f"{OUTPUTS}stats/coverage_table.txt"
+    shell:
+        "genomeCoverageBed -ibam {input} -bga > {output}"
+ 
+ 
+rule per_xsome_coverage:
+    input:
+        f"{OUTPUTS}stats/coverage_table.txt"
+    output:
+        f"{OUTPUTS}stats/custom_coverage_table.csv"
+    shell:
+         "python3 scripts/per_xsome_coverage.py {input} > {output}"
+
+
+rule samtools_coverage:
+    input:
+        f"{OUTPUTS}merged_sorted.bam"
+    output:
+        f"{OUTPUTS}stats/samtools_coverage.txt"
+    shell:
+        "samtools coverage {input} > {output}"
+
+
 rule create_table:
     input:
-        "outputs/merged_sorted.bam"
+        f"{OUTPUTS}merged_sorted.bam"
     output:
-        "outputs/tables/raw_alignment_table.csv"
+        f"{OUTPUTS}tables/raw_alignment_table.csv"
     shell:
         "cat {input} | python3 scripts/create_table.py > {output}"
         
         
 rule virtual_digest:
     input:
-        f"{config['reference']}"
+        REFERENCE
     output:
-        "outputs/tables/digested_fragments_table.csv"
+        f"{OUTPUTS}tables/digested_fragments_table.csv"
     shell:
         "python3 scripts/virtual_digest.py {input} > {output}"
 
         
 rule assign_fragments:
     input:
-        alignment_table="outputs/tables/raw_alignment_table.csv",
-        fragments_table="outputs/tables/digested_fragments_table.csv"
+        alignment_table=f"{OUTPUTS}tables/raw_alignment_table.csv",
+        fragments_table=f"{OUTPUTS}tables/digested_fragments_table.csv"
     output:
-        "outputs/tables/alignment_table.csv"
+        f"{OUTPUTS}tables/alignment_table.csv"
     shell:
         "python3 scripts/assign_fragments.py {input.alignment_table} {input.fragments_table} > {output}"
         
 
 rule map_assembly:
     input:
-        align="outputs/tables/alignment_table.csv",
-        assembly=config['assembly']
+        align=f"{OUTPUTS}tables/alignment_table.csv",
+        assembly=ASSEMBLY
     output:
-        "outputs/tables/alignment_table_chrom.csv"
+        f"{OUTPUTS}tables/alignment_table_chrom.csv"
     shell:
         "python3 scripts/map_assembly.py {input.align} {input.assembly} > {output}"
         
         
 rule filter_bookends:
     input:
-        "outputs/tables/alignment_table_chrom.csv"
+        f"{OUTPUTS}tables/alignment_table_chrom.csv"
     output:
-        "outputs/tables/filtered_alignment_table.csv"
+        f"{OUTPUTS}tables/filtered_alignment_table.csv"
     shell:
         "python3 scripts/filter_bookends.py {input} > {output}"
     
         
 rule build_paohviz_table:
     input:
-        "outputs/tables/filtered_alignment_table.csv"
+        f"{OUTPUTS}tables/filtered_alignment_table.csv"
     output:
-        "outputs/tables/paohviz_output.csv"
+        f"{OUTPUTS}tables/paohviz_output.csv"
     shell:
         "python3 scripts/build_paohviz.py {input} > {output}"
