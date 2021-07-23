@@ -81,9 +81,22 @@ The output structure is as follows:
 outputs/
 ├── config.yaml
 ├── mapped
-│   ├── MAPPED_READ_ID_1
-│   ├── ................
-│   └── MAPPED_READ_ID_N
+│   ├── FAP70729_pass_barcode11_003e2571_0.bam
+│   ├── FAP70729_pass_barcode11_003e2571_10.bam
+│   ├── FAP70729_pass_barcode11_003e2571_11.bam
+│   ├── FAP70729_pass_barcode11_003e2571_12.bam
+│   ├── FAP70729_pass_barcode11_003e2571_13.bam
+│   ├── FAP70729_pass_barcode11_003e2571_14.bam
+│   ├── FAP70729_pass_barcode11_003e2571_15.bam
+│   ├── FAP70729_pass_barcode11_003e2571_1.bam
+│   ├── FAP70729_pass_barcode11_003e2571_2.bam
+│   ├── FAP70729_pass_barcode11_003e2571_3.bam
+│   ├── FAP70729_pass_barcode11_003e2571_4.bam
+│   ├── FAP70729_pass_barcode11_003e2571_5.bam
+│   ├── FAP70729_pass_barcode11_003e2571_6.bam
+│   ├── FAP70729_pass_barcode11_003e2571_7.bam
+│   ├── FAP70729_pass_barcode11_003e2571_8.bam
+│   └── FAP70729_pass_barcode11_003e2571_9.bam
 ├── merged.bam
 ├── merged_reformatted.bam
 ├── merged_sorted.bam
