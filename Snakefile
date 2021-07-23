@@ -30,7 +30,8 @@ rule all:
         f"{OUTPUTS}stats/merged_sorted_stats.txt",
         f"{OUTPUTS}stats/coverage_table.txt",
         f"{OUTPUTS}stats/samtools_coverage.txt",
-        f"{OUTPUTS}stats/custom_coverage_table.csv"
+        f"{OUTPUTS}stats/custom_coverage_table.csv",
+        f"{OUTPUTS}tables/incidence_table.csv"
         
         
 rule copy_config:
@@ -184,3 +185,12 @@ rule build_paohviz_table:
         f"{OUTPUTS}tables/paohviz_output.csv"
     shell:
         "python3 scripts/build_paohviz.py {input} > {output}"
+        
+        
+rule build_incidence:
+    input:
+        f"{OUTPUTS}tables/filtered_alignment_table.csv"
+    output:
+        f"{OUTPUTS}tables/incidence_table.csv"
+    shell:
+        "python3 scripts/build_incidence_matrix.py {input} > {output}"
