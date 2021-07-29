@@ -11,6 +11,9 @@ reference/*
 reads/*
 inputs/*
 
+# allow requirements
+!requirements.txt
+
 # snakemake files
 .snakemake/*
 
