@@ -251,7 +251,15 @@ class AlignmentRecord(_BaseModel):
             chrom, start, end = (align.reference_name, align.reference_start, align.reference_end)
             read_length = align.infer_read_length()
             align_score = align.get_tag("AS")
-            align_base_qscore = mean_qscore(np.array(align.query_alignment_qualities))
+            
+#             if align_score < 0:
+#                 align_score = 0
+            
+            if align.query_alignment_qualities is None:
+                align_base_qscore = 0
+            else:
+                align_base_qscore = mean_qscore(np.array(align.query_alignment_qualities))
+                
             if align.is_secondary:
                 align_cat = "secondary"
             elif align.is_supplementary:

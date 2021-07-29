@@ -21,17 +21,17 @@ rule all:
     input:
         f"{OUTPUTS}merged_sorted.bam",
         f"{OUTPUTS}config.yaml",
+        f"{OUTPUTS}stats/merged_sorted_stats.txt",
+        f"{OUTPUTS}stats/coverage_table.txt",
+        f"{OUTPUTS}stats/samtools_coverage.txt",
+        f"{OUTPUTS}stats/custom_coverage_table.csv",
         f"{OUTPUTS}tables/raw_alignment_table.csv",
         f"{OUTPUTS}tables/digested_fragments_table.csv",
         f"{OUTPUTS}tables/alignment_table_mapped.csv",
         f"{OUTPUTS}tables/alignment_table.csv",
         f"{OUTPUTS}tables/filtered_alignment_table.csv",
         f"{OUTPUTS}tables/paohviz_output.csv",
-        f"{OUTPUTS}stats/merged_sorted_stats.txt",
-        f"{OUTPUTS}stats/coverage_table.txt",
-        f"{OUTPUTS}stats/samtools_coverage.txt",
-        f"{OUTPUTS}stats/custom_coverage_table.csv",
-        f"{OUTPUTS}tables/incidence_table.csv"
+        f"{OUTPUTS}tables/incidence_table.csv",
         
         
 rule copy_config:
@@ -43,7 +43,20 @@ rule copy_config:
         "cp {input} {output}"
 
 
-rule bwa_map:
+# rule aligner:
+#     input:
+#         refgenome=REFERENCE,
+#         reads=f"{READS}{{sample}}.fastq"
+#     output:
+#         bam=f"{OUTPUTS}mapped/{{sample}}.bam"
+#     threads:
+#         config['threads']
+#     shell:
+#         "bwa mem -t {threads} {input.refgenome} {input.reads} "
+#         " | samtools view -Sb -> {output.bam}"
+ 
+
+rule aligner:
     input:
         refgenome=REFERENCE,
         reads=f"{READS}{{sample}}.fastq"
@@ -52,7 +65,7 @@ rule bwa_map:
     threads:
         config['threads']
     shell:
-        "bwa mem -t {threads} {input.refgenome} {input.reads} "
+        "minimap2 -ax map-ont -t {threads} {input.refgenome} {input.reads} "
         " | samtools view -Sb -> {output.bam}"
         
 
@@ -175,7 +188,7 @@ rule filter_bookends:
     output:
         f"{OUTPUTS}tables/filtered_alignment_table.csv"
     shell:
-        "python3 scripts/filter_bookends.py {input} > {output}"
+        f"python3 scripts/filter_bookends.py {{input}} {config['chromosome']} > {{output}}"
     
         
 rule build_paohviz_table:

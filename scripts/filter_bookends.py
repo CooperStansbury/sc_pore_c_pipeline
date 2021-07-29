@@ -180,7 +180,7 @@ def get_maximal_reads(df, n=2):
 
 if __name__ == "__main__":
     input_path = sys.argv[1]
-    chromosome = 19
+    chromosome = sys.argv[2]
     criterion = 'perc_of_alignment'
     filter_n_fragments = 1
     n_top_reads = 2
