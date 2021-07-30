@@ -42,31 +42,28 @@ rule copy_config:
     shell:
         "cp {input} {output}"
 
-
-# rule aligner:
+# @TODO: read_names are broken here and need to be updated
+# rule predigest_reads:
 #     input:
-#         refgenome=REFERENCE,
-#         reads=f"{READS}{{sample}}.fastq"
+#         f"{READS}{{sample}}.fastq"
 #     output:
-#         bam=f"{OUTPUTS}mapped/{{sample}}.bam"
-#     threads:
-#         config['threads']
+#         f"{OUTPUTS}digested/{{sample}}.fastq"
 #     shell:
-#         "bwa mem -t {threads} {input.refgenome} {input.reads} "
-#         " | samtools view -Sb -> {output.bam}"
- 
+#         "python3 scripts/pre_digest.py {input} {output}"
+# 
 
 rule aligner:
     input:
         refgenome=REFERENCE,
         reads=f"{READS}{{sample}}.fastq"
+        # reads=f"{OUTPUTS}digested/{{sample}}.fastq" # for pre-digested reads 
     output:
-        bam=f"{OUTPUTS}mapped/{{sample}}.bam"
+        f"{OUTPUTS}mapped/{{sample}}.bam"
     threads:
         config['threads']
     shell:
-        "minimap2 -ax map-ont -t {threads} {input.refgenome} {input.reads} "
-        " | samtools view -Sb -> {output.bam}"
+        f"{config['aligner']} -t {{threads}} {{input.refgenome}} {{input.reads}} "
+        " | samtools view -Sb -> {output}"
         
 
 rule samtools_merge:
