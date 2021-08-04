@@ -60,7 +60,7 @@ def drop_low_fragment_count_reads(df, n=1, verbose=True):
     -----------------------------
         : df (pd.DataFrame): the alignment table without low fragement reads
     """
-    grped  = df.groupby('read_idx', as_index=False).agg({
+    grped  = df.groupby('read_name', as_index=False).agg({
         'fragment_id' : 'count',
     })
     if verbose:
@@ -68,7 +68,7 @@ def drop_low_fragment_count_reads(df, n=1, verbose=True):
     
     # filter 
     grped = grped[grped['fragment_id'] > n]
-    df = df[df['read_idx'].isin(grped['read_idx'])]
+    df = df[df['read_name'].isin(grped['read_name'])]
     
     if verbose:
         print(f"n reads AFTER striping {n}-fragment reads: {len(grped)}")
@@ -100,8 +100,8 @@ def per_read_filter(df, criterion, verbose=0):
     if verbose > 0:
         print(f"\nalignment table total fragments: {len(df)}")
     
-    for read_idx in df['read_idx'].unique():
-        read_df = df[df['read_idx'] == read_idx].reset_index()
+    for read_idx in df['read_name'].unique():
+        read_df = df[df['read_name'] == read_idx].reset_index()
         
         read_df['read_min'] = read_df['fragment_start'].min() # add first fragment
         read_df['read_max'] = read_df['fragment_end'].max() # add last fragment
@@ -131,7 +131,7 @@ def per_read_filter(df, criterion, verbose=0):
 
 def get_maximal_reads(df, n=2):
     """A function to return the n reads that share bookending 
-    fragment IDS, sorted by mean mapping quality (read)
+    fragment IDS, sorted by mean perc_of_alignment (read)
     
     Parameters:
     -----------------------------
@@ -145,7 +145,7 @@ def get_maximal_reads(df, n=2):
     
     # reduce rows with unique fragments 
     # - since we perform this excersise on reads, not fragments
-    grped = df.groupby('read_idx', as_index=False).agg({
+    grped = df.groupby('read_name', as_index=False).agg({
         'first_fragment' : 'first', 
         'last_fragment' : 'first', 
         'n_fragments' : 'first',
@@ -171,10 +171,10 @@ def get_maximal_reads(df, n=2):
     grped['SELECT'] = np.where(mask, 1, 0)
 
     grped = grped[grped['SELECT'] == 1]
-    read_ids = grped['read_idx']
+    read_ids = grped['read_name']
     
     # filter the original data frame for only those reads
-    df = df[df['read_idx'].isin(read_ids)]
+    df = df[df['read_name'].isin(read_ids)]
     return df
 
 

@@ -1,8 +1,9 @@
 # paths to config files
-reads: "/nfs/turbo/umms-indikar/shared/projects/poreC/pipeline_test/inputs/reads/"
-reference: "/nfs/turbo/umms-indikar/shared/projects/poreC/pipeline_test/inputs/bwa_reference/GCF_000001635.27_GRCm39_genomic.fna"
-assembly: "/nfs/turbo/umms-indikar/shared/projects/poreC/pipeline_test/inputs/assembly/GRCm39_Assembly.csv"
-output: "/nfs/turbo/umms-indikar/shared/projects/poreC/pipeline_test/outputs/"
-aligner: "bwa bwasw -b 5 -q 2 -r 1 -T 15 -z 10"
+reads: "/scratch/indikar_root/indikar1/shared_data/pipeline_test/inputs/barcode01/"
+reference: "/nfs/turbo/umms-indikar/shared/genomes/GRCh38_mm2_indexed/GCA_000001405.15_GRCh38_genomic.fna"
+assembly: "/nfs/turbo/umms-indikar/shared/genomes/GRCh38_assmebly/assembly.csv"
+output: "/scratch/indikar_root/indikar1/shared_data/pipeline_test/barcode01_mm2_results/"
+aligner: "minimap2 -ax map-ont"
 threads: 36
 chromosome: 19
+assembly_field: "GenBank"

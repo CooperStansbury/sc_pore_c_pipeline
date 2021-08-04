@@ -16,7 +16,7 @@ import pyranges as pr
 from enum import Enum
 from typing import Dict, List, NewType, Optional
 from intake.source.base import DataSource, Schema
-import pyarrow as pa
+# import pyarrow as pa
 from pydantic import BaseModel, confloat, conint, constr
 
 
@@ -189,8 +189,8 @@ class AlignmentRecord(_BaseModel):
     read_start: conint(ge=0)
     read_end: conint(ge=0)
     mapping_quality: conint(ge=0, le=255)
-    align_score: conint(ge=0)
-    align_base_qscore: conint(ge=0)
+    align_score: int 
+    align_base_qscore: int
     phase_set: int = 0
     phase_qual: conint(ge=0) = 0
     haplotype: conint(ge=-1) = -1

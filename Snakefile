@@ -55,7 +55,8 @@ rule copy_config:
 rule aligner:
     input:
         refgenome=REFERENCE,
-        reads=f"{READS}{{sample}}.fastq"
+        reads=f"{READS}{{sample}}.gz"
+        # reads=f"{READS}{{sample}}.fastq"
         # reads=f"{OUTPUTS}digested/{{sample}}.fastq" # for pre-digested reads 
     output:
         f"{OUTPUTS}mapped/{{sample}}.bam"
@@ -140,7 +141,8 @@ rule samtools_coverage:
     shell:
         "samtools coverage {input} > {output}"
 
-
+# @TODO: switch out for stable pore-c tool?
+# conda install -c bioconda pore-c
 rule create_table:
     input:
         f"{OUTPUTS}merged_sorted.bam"
@@ -176,7 +178,7 @@ rule map_assembly:
     output:
         f"{OUTPUTS}tables/alignment_table.csv"
     shell:
-        "python3 scripts/map_assembly.py {input.align} {input.assembly} > {output}"
+        f"python3 scripts/map_assembly.py {{input.align}} {{input.assembly}} {config['assembly_field']} > {{output}}"
         
         
 rule filter_bookends:
