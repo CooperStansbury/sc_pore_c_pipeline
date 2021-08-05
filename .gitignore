@@ -12,6 +12,9 @@ reference/*
 reads/*
 inputs/*
 
+# allow assembly files
+!assembly_files/*
+
 # allow requirements
 !requirements.txt
 

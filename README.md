@@ -4,43 +4,55 @@
 
 This tool is intended to create analysis files for single-cell pore-C reads.
 
-## Dependencies
+## Installation
 
-To run the whole pipeline make sure that the following modules are loaded in the GreatLakes environment:
+The pipeline's environment can be built by calling the following `conda` functions from inside the `sc_pore_c_pipeline` directory:
 
-- Bioinformatics
-- bwa
-- samtools/1.13
-- bedtools2
-
-Note that you can load these modules by running: `./build_gl_env.sh`.
-
+```
+conda env create
+conda activate pipeline
+```
 
 ## Usage
 
 This is a [snakemake tool](https://snakemake.readthedocs.io/en/stable/index.html). It is designed to take reads after basecalling through to several analysis files. 
+
 ### Running the Pipeline
 
 The whole pipeline may be run from inside the `sc_pore_c_pipeline` directory like so:
 
 ```
-snakemake -j <n_cores>
+snakemake --use-conda -j <n_cores>
 ```
 
-Individual steps may be run like so, as long as they do not contain wildcards (alignment tools).
+Individual steps may be run, as long as they do not contain wildcards in their input/output arguments:
 
 ```
-snakemake -j <n_cores> <rule_name>
+snakemake --use-conda -j <n_cores> <rule_name>
 ```
 
-### Inputs
+### Configuration
 
-Each input can be specified separately in the `config`. There are 4 input requirements:
+The file `sc_pore_c_pipeline/config/config.yaml` contains the following parameters that must be specified for each run of the pipeline:
 
-- An assembly file. For example: [Mouse Genome Assembly GRCm39](https://www.ncbi.nlm.nih.gov/grc/mouse/data). Note that this file has been trimmed of extra commas and leading whitespace must be handled. Column names are expected: `Chromosome,Total length (bp),GenBank accession,RefSeq accession`
-- An indexed reference genome. Note that this should be indexed by the alignment tool (e.g., `bwa`, `minimap2`).
-- A directory of reads (`.fastq`) after basecalling
-- A config file, from the `sc_pore_c_pipeline/config` location specifying the inputs and outputs.
+- ** reads: ** An input directory containing _only_ files with the extension `.fastq` or `.gz` (for zipped .`fastq`) files. The file type is specified by the 'fastq_filetype' parameter listed below. The directory path MUST end with a "/", for example: `inputs/` but not `inputs`.
+- ** reference: ** A path to an indexed, unzipped reference genome (`.fna`) file for the alignment tool of choice. Note that the reference must be indexed by the tool used to align the genomes in the parameter 'aligner' below.
+- ** assembly: ** A path to an "assembly" file from the [The Genome Reference Consortium](https://www.ncbi.nlm.nih.gov/grc)  for example: [https://www.ncbi.nlm.nih.gov/grc/human/data](https://www.ncbi.nlm.nih.gov/grc/human/data). Note that this file is formated as a `.csv` file with the column headers: `Chromosome,Total length (bp),GenBank accession,RefSeq accession`. There are a few examples in `sc_pore_c_pipeline/assembly_files/`. 
+- ** output: ** A path to a directory for outputs. The pipeline will create the folder if it does not exist. Note that the pipeline will not regenerate files that already do exist, if their inputs have not changed between pipeline executions.
+- ** aligner: ** A string formated function for alignment. Note that the refenerence genome must be unzipped and indexed by the tool used to align. Currently, the environment supports both `minimap2` and `bwa` alignment tools. Common examples of the function include:
+
+```
+(1) bwa mem
+(2) bwa bwasw -b 5 -q 2 -r 1 -T 15 -z 10
+(3) minimap2 -ax map-ont
+```
+
+- ** threads: ** An integer number for the number of threads. This will depend on the computational resources available at runtime. 
+- ** chromosome: ** An integer number for subprocessing of a single chromosome. Can also be "all". This affects ONLY outouts for [Paohvis](https://www.aviz.fr/Research/Paohvis).
+- ** assembly_field: ** A string that must be either `GenBank` or `RefSeq` exactly. This set the field that the `alignment_table.csv` file is mapped to on the assemlby, and is critical for creating outputs for [Paohvis](https://www.aviz.fr/Research/Paohvis).
+- ** fastq_filetype: ** Can be either `.fastq` or `.gz`. Must match the structure of the files in the 'reads' parameter. MUST include the period.
+
+### Example Input/Output Structure
 
 ```
 inputs/

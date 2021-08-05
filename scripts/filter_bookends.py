@@ -188,7 +188,9 @@ if __name__ == "__main__":
     df = pd.read_csv(input_path)
     
     df = add_fragment_midpoints(df) # compute mid points
-    df = subset_chromosome(df, chromosome, verbose=False) # get a single chromosome
+    
+    if not str(chromosome).lower() == 'all':
+        df = subset_chromosome(df, chromosome, verbose=False) # get a single chromosome
     df = per_read_filter(df, criterion, verbose=0) # filter for duplicate within read fragments 
     df = drop_low_fragment_count_reads(df, n=filter_n_fragments, verbose=False) # drop reads with low fragment counts
     df = get_maximal_reads(df, n_top_reads) # filter for reads spanning the same fragments

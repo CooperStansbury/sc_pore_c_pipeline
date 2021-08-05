@@ -55,7 +55,7 @@ rule copy_config:
 rule aligner:
     input:
         refgenome=REFERENCE,
-        reads=f"{READS}{{sample}}.gz"
+        reads=f"{READS}{{sample}}{config['fastq_filetype']}"
         # reads=f"{READS}{{sample}}.fastq"
         # reads=f"{OUTPUTS}digested/{{sample}}.fastq" # for pre-digested reads 
     output:
@@ -65,7 +65,6 @@ rule aligner:
     shell:
         f"{config['aligner']} -t {{threads}} {{input.refgenome}} {{input.reads}} "
         " | samtools view -Sb -> {output}"
-        
 
 rule samtools_merge:
     input:
@@ -201,7 +200,7 @@ rule build_paohviz_table:
         
 rule build_incidence:
     input:
-        f"{OUTPUTS}tables/filtered_alignment_table.csv"
+        f"{OUTPUTS}tables/alignment_table.csv"
     output:
         f"{OUTPUTS}tables/incidence_table.csv"
     shell:
