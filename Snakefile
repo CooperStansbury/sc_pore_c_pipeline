@@ -29,8 +29,6 @@ rule all:
         f"{OUTPUTS}tables/digested_fragments_table.csv",
         f"{OUTPUTS}tables/alignment_table_mapped.csv",
         f"{OUTPUTS}tables/alignment_table.csv",
-        f"{OUTPUTS}tables/filtered_alignment_table.csv",
-        f"{OUTPUTS}tables/paohviz_output.csv",
         f"{OUTPUTS}tables/incidence_table.csv",
         
         
@@ -180,22 +178,22 @@ rule map_assembly:
         f"python3 scripts/map_assembly.py {{input.align}} {{input.assembly}} {config['assembly_field']} > {{output}}"
         
         
-rule filter_bookends:
-    input:
-        f"{OUTPUTS}tables/alignment_table.csv"
-    output:
-        f"{OUTPUTS}tables/filtered_alignment_table.csv"
-    shell:
-        f"python3 scripts/filter_bookends.py {{input}} {config['chromosome']} > {{output}}"
-    
+# rule filter_bookends:
+#     input:
+#         f"{OUTPUTS}tables/alignment_table.csv"
+#     output:
+#         f"{OUTPUTS}tables/filtered_alignment_table.csv"
+#     shell:
+#         f"python3 scripts/filter_bookends.py {{input}} > {{output}}"
+#     
         
-rule build_paohviz_table:
-    input:
-        f"{OUTPUTS}tables/filtered_alignment_table.csv"
-    output:
-        f"{OUTPUTS}tables/paohviz_output.csv"
-    shell:
-        "python3 scripts/build_paohviz.py {input} > {output}"
+# rule build_paohviz_table:
+#     input:
+#         f"{OUTPUTS}tables/filtered_alignment_table.csv"
+#     output:
+#         f"{OUTPUTS}tables/paohviz_output.csv"
+#     shell:
+#         "python3 scripts/build_paohviz.py {input} > {output}"
         
         
 rule build_incidence:

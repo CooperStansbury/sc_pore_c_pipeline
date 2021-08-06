@@ -22,31 +22,6 @@ def add_fragment_midpoints(df):
     return df
 
 
-def subset_chromosome(df, chrom, verbose=True):
-    """A function to filter the alignment table to fragments within a single 
-    chromosome.
-    
-    NOTES:
-        (1) There may be reads that contain mapped fragments in different chromsomes. THESE ARE DROPPED.
-    
-    Parameters:
-    -----------------------------
-        :  df (pd.DataFrame): the alignment table 
-        :  chrom (int): the chomosome to select
-        :  verbose (bool): if True, print numner of rows
-        
-    Returns:
-    -----------------------------
-        : df (pd.DataFrame): the alignment table for fragments in a single chromosome
-    """    
-    if verbose:
-        print(f"\nnumber of total mapped fragments {chrom}: {len(df)}")
-    df = df[df['Chromosome'].astype(str) == str(chrom)]
-    if verbose:
-        print(f"number of mapped fragments in chromosome {chrom}: {len(df)}")
-    return df
-
-
 def drop_low_fragment_count_reads(df, n=1, verbose=True):
     """A function to drop reads that have n or fewer fragments 
         
@@ -180,18 +155,13 @@ def get_maximal_reads(df, n=2):
 
 if __name__ == "__main__":
     input_path = sys.argv[1]
-    chromosome = sys.argv[2]
     criterion = 'perc_of_alignment'
     filter_n_fragments = 1
     n_top_reads = 2
     
     df = pd.read_csv(input_path)
-    
     df = add_fragment_midpoints(df) # compute mid points
-    
-    if not str(chromosome).lower() == 'all':
-        df = subset_chromosome(df, chromosome, verbose=False) # get a single chromosome
-    df = per_read_filter(df, criterion, verbose=0) # filter for duplicate within read fragments 
+    df = per_read_filter(df, criterion, verbose=0) # filter duplicate within read fragments 
     df = drop_low_fragment_count_reads(df, n=filter_n_fragments, verbose=False) # drop reads with low fragment counts
     df = get_maximal_reads(df, n_top_reads) # filter for reads spanning the same fragments
     

@@ -15,7 +15,7 @@ def read_joiner(read_values):
     -----------------------------
         : str_read_values (str): a string separated by a semi-colon with values
     """
-    str_list = list(set(read_values.astype(str).to_list()))
+    str_list = list(read_values.astype(str).to_list())
     return ";".join(str_list)
 
 
@@ -53,8 +53,7 @@ def build_incidence(df):
         max_contact_distance=('fragment_midpoint', spread),
         contact_midpoints=('fragment_midpoint', read_joiner),
         fragment_ids=('fragment_id', read_joiner),
-        first_fragment_start=('fragment_start', np.min),
-        last_fragment_end=('fragment_end', np.max),
+        chromosome=('Chromosome', read_joiner),
     )
 
     incidence = incidence.sort_values(by='cardinality', ascending=False)
