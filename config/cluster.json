@@ -1,0 +1,18 @@
+{"__default__": {
+    "account_slurm": "your_slurm_account",
+    "partition": "standard",
+    "jobname": "{rule}.{wildcards}",
+    "nodes": 36,
+    "procs": 36,
+    "pmem": "180GB",
+    "walltime": "24:00:00",
+    "email": "cstansbu@umich.edu",
+    "mailon": "a",
+    "mail_type": "END,FAIL",
+    "outdir": "log/hpc/",
+    "outfile": "log/hpc/{rule}.{wildcards}.out"
+    },
+"sleep": {
+    "walltime": "24:00:00"
+    }
+}
