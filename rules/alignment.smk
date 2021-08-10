@@ -2,8 +2,6 @@ rule aligner:
     input:
         refgenome=REFERENCE,
         reads=f"{READS}{{sample}}{config['fastq_filetype']}"
-        # reads=f"{READS}{{sample}}.fastq"
-        # reads=f"{OUTPUTS}digested/{{sample}}.fastq" # for pre-digested reads 
     output:
         f"{OUTPUTS}mapped/{{sample}}.bam"
     threads:
@@ -11,6 +9,7 @@ rule aligner:
     shell:
         f"{config['aligner']} -t {{threads}} {{input.refgenome}} {{input.reads}} "
         " | samtools view -Sb -> {output}"
+
 
 rule samtools_merge:
     input:

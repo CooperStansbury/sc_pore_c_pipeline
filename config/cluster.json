@@ -2,7 +2,7 @@
     "account_slurm": "your_slurm_account",
     "partition": "standard",
     "jobname": "{rule}.{wildcards}",
-    "nodes": 36,
+    "nodes": 1,
     "procs": 36,
     "pmem": "180GB",
     "walltime": "24:00:00",
