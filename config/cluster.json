@@ -1,18 +1,19 @@
 {"__default__": {
-    "account_slurm": "your_slurm_account",
+    "account_pbs": "your_pbs_account",
+    "account_slurm": "indikar1",
+    "queue": "fluxod",
+	"qos":"flux",
     "partition": "standard",
     "jobname": "{rule}.{wildcards}",
     "nodes": 1,
-    "procs": 36,
-    "pmem": "180GB",
-    "walltime": "24:00:00",
+    "procs": 1,
+    "pmem": "50GB",
+    "walltime": "96:00:00",
     "email": "cstansbu@umich.edu",
     "mailon": "a",
     "mail_type": "END,FAIL",
-    "outdir": "log/hpc/",
-    "outfile": "log/hpc/{rule}.{wildcards}.out"
-    },
-"sleep": {
-    "walltime": "24:00:00"
+    "jobout": "oe",
+    "outdir": "logs/",
+    "outfile": "logs/{rule}.{wildcards}.out"
     }
 }

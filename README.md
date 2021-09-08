@@ -22,13 +22,13 @@ This is a [snakemake tool](https://snakemake.readthedocs.io/en/stable/index.html
 The whole pipeline may be run from inside the `sc_pore_c_pipeline` directory like so:
 
 ```
-snakemake --use-conda -j <n_cores>
+snakemake -j <n_cores>
 ```
 
 Individual steps may be run, as long as they do not contain wildcards in their input/output arguments:
 
 ```
-snakemake --use-conda -j <n_cores> <rule_name>
+snakemake -j <n_cores> <rule_name>
 ```
 
 ### Configuration

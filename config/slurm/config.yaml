@@ -1,12 +1,3 @@
-# paths to config files
-reads: "/scratch/indikar_root/indikar1/shared_data/pipeline_test/inputs/"
-reference: "/nfs/turbo/umms-indikar/shared/genomes/GRCh38_mm2_indexed/GCA_000001405.15_GRCh38_genomic.fna"
-assembly: "assembly_files/GRCh38_assmebly.csv"
-output: "/scratch/indikar_root/indikar1/shared_data/pipeline_test/test/"
-aligner: "minimap2 -ax map-ont"
-threads: 36
-assembly_field: "GenBank"
-fastq_filetype: ".gz"
 cluster: "sbatch --job-name {cluster.jobname} --account {cluster.account_slurm} --partition {cluster.partition} --mail-user {cluster.email} --mail-type {cluster.mail_type} --nodes {cluster.nodes} --ntasks {cluster.procs} --mem-per-cpu {cluster.pmem} --time {cluster.walltime} --output {cluster.outfile} "
 cluster-config: "config/cluster.json"
 jobs: 4999

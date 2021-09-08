@@ -1,0 +1,18 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Select jobs to execute...
+
+[Fri Aug 13 14:29:36 2021]
+rule samtools_merge:
+    input: /scratch/indikar_root/indikar1/shared_data/pipeline_test/outputs/mapped/FAQ24352_pass_barcode06_c2cef039_37.fastq.bam
+    output: /scratch/indikar_root/indikar1/shared_data/pipeline_test/outputs/merged.bam
+    jobid: 0
+    resources: mem_mb=1000, disk_mb=1000, tmpdir=/tmp
+
+[W::bam_merge_core2] No @HD tag found.
+[Fri Aug 13 14:29:38 2021]
+Finished job 0.
+1 of 1 steps (100%) done

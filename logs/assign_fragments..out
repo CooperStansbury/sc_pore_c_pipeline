@@ -1,0 +1,17 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Select jobs to execute...
+
+[Fri Aug 13 14:30:47 2021]
+rule assign_fragments:
+    input: /scratch/indikar_root/indikar1/shared_data/pipeline_test/outputs/tables/raw_alignment_table.csv, /scratch/indikar_root/indikar1/shared_data/pipeline_test/outputs/tables/digested_fragments_table.csv
+    output: /scratch/indikar_root/indikar1/shared_data/pipeline_test/outputs/tables/alignment_table_mapped.csv
+    jobid: 0
+    resources: mem_mb=1132, disk_mb=1132, tmpdir=/tmp
+
+[Fri Aug 13 14:31:28 2021]
+Finished job 0.
+1 of 1 steps (100%) done

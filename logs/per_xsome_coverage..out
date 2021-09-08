@@ -1,0 +1,17 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Select jobs to execute...
+
+[Fri Aug 13 14:30:46 2021]
+rule per_xsome_coverage:
+    input: /scratch/indikar_root/indikar1/shared_data/pipeline_test/outputs/stats/coverage_table.txt
+    output: /scratch/indikar_root/indikar1/shared_data/pipeline_test/outputs/stats/custom_coverage_table.csv
+    jobid: 0
+    resources: mem_mb=1000, disk_mb=1000, tmpdir=/tmp
+
+[Fri Aug 13 14:30:50 2021]
+Finished job 0.
+1 of 1 steps (100%) done

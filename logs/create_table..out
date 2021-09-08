@@ -1,0 +1,18 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Select jobs to execute...
+
+[Fri Aug 13 14:30:06 2021]
+rule create_table:
+    input: /scratch/indikar_root/indikar1/shared_data/pipeline_test/outputs/merged_sorted.bam
+    output: /scratch/indikar_root/indikar1/shared_data/pipeline_test/outputs/tables/raw_alignment_table.csv
+    jobid: 0
+    resources: mem_mb=1000, disk_mb=1000, tmpdir=/tmp
+
+[E::idx_find_and_load] Could not retrieve index file for '<stdin>'
+[Fri Aug 13 14:30:09 2021]
+Finished job 0.
+1 of 1 steps (100%) done

@@ -1,0 +1,17 @@
+Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Select jobs to execute...
+
+[Fri Aug 13 14:29:57 2021]
+rule samtools_sort:
+    input: /scratch/indikar_root/indikar1/shared_data/pipeline_test/outputs/merged_reformatted.bam
+    output: /scratch/indikar_root/indikar1/shared_data/pipeline_test/outputs/merged_sorted.bam
+    jobid: 0
+    resources: mem_mb=1000, disk_mb=1000, tmpdir=/tmp
+
+[Fri Aug 13 14:29:58 2021]
+Finished job 0.
+1 of 1 steps (100%) done

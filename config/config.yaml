@@ -1,8 +1,7 @@
-# paths to config files
 reads: "/scratch/indikar_root/indikar1/shared_data/pipeline_test/inputs/"
 reference: "/nfs/turbo/umms-indikar/shared/genomes/GRCh38_mm2_indexed/GCA_000001405.15_GRCh38_genomic.fna"
 assembly: "assembly_files/GRCh38_assmebly.csv"
-output: "/scratch/indikar_root/indikar1/shared_data/pipeline_test/test/"
+output: "/scratch/indikar_root/indikar1/shared_data/pipeline_test/outputs/"
 aligner: "minimap2 -ax map-ont"
 threads: 36
 assembly_field: "GenBank"
